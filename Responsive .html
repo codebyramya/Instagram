@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Responsive Grid Box</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #000000;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            max-width: 1200px;
+            margin: auto;
+        }
+        .grid-item {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            padding: 30px;
+            text-align: center;
+            font-size: 1.2rem;
+            transition: box-shadow 0.2s;
+        }
+        .grid-item:hover {
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+        @media (max-width: 600px) {
+            .grid-container {
+                padding: 10px;
+                gap: 10px;
+            }
+            .grid-item {
+                padding: 16px;
+                font-size: 1rem;
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="grid-container">
+        <div class="grid-item">Box 1</div>
+        <div class="grid-item">Box 2</div>
+        <div class="grid-item">Box 3</div>
+        <div class="grid-item">Box 4</div>
+        <div class="grid-item">Box 5</div>
+        <div class="grid-item">Box 6</div>
+    </div>
+</body>
+</html>
