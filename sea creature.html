@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Colorful Sea Creature</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            overflow: hidden;
+        }
+        /* Water background animation */
+        .water-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .creature {
+            position: absolute;
+            left: 50vw;
+            top: 50vh;
+            width: 120px;
+            height: 120px;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            transition: filter 0.3s;
+            z-index: 1;
+        }
+        .body {
+            fill: url(#bodyGradient);
+            filter: drop-shadow(0 0 20px #00eaff);
+        }
+        .eye {
+            fill: white;
+            stroke: #222;
+            stroke-width: 2;
+        }
+        .pupil {
+            fill: #222;
+        }
+        .tentacle {
+            stroke-width: 10;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 8px #ff00cc);
+            transition: stroke 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated water background SVG -->
+    <svg class="water-bg" width="100vw" height="100vh" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+        <defs>
+            <linearGradient id="waterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#1e3c72" />
+                <stop offset="100%" stop-color="#2a5298" />
+            </linearGradient>
+        </defs>
+        <rect width="1920" height="1080" fill="url(#waterGrad)" />
+        <g id="waves">
+            <path id="wave1" fill="#00bcd4" fill-opacity="0.2"/>
+            <path id="wave2" fill="#fff" fill-opacity="0.08"/>
+        </g>
+    </svg>
+    <svg class="creature" width="120" height="120" viewBox="0 0 120 120">
+        <defs>
+            <radialGradient id="bodyGradient" cx="50%" cy="50%" r="60%">
+                <stop offset="0%" stop-color="#ffeb3b"/>
+                <stop offset="100%" stop-color="#00bcd4"/>
+            </radialGradient>
+            <linearGradient id="tentacleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ff00cc"/>
+                <stop offset="100%" stop-color="#00ffea"/>
+            </linearGradient>
+        </defs>
+        <!-- Body -->
+        <ellipse class="body" cx="60" cy="60" rx="40" ry="35"/>
+        <!-- Tentacles -->
+        <g id="tentacles">
+            <path class="tentacle" id="t1" stroke="url(#tentacleGradient)" d="M60,95 Q60,110 40,110"/>
+            <path class="tentacle" id="t2" stroke="url(#tentacleGradient)" d="M60,95 Q60,110 80,110"/>
+            <path class="tentacle" id="t3" stroke="url(#tentacleGradient)" d="M60,95 Q50,115 30,100"/>
+            <path class="tentacle" id="t4" stroke="url(#tentacleGradient)" d="M60,95 Q70,115 90,100"/>
+        </g>
+        <!-- Eyes -->
+        <ellipse class="eye" cx="48" cy="60" rx="8" ry="10"/>
+        <ellipse class="eye" cx="72" cy="60" rx="8" ry="10"/>
+        <!-- Pupils -->
+        <ellipse class="pupil" id="pupilL" cx="48" cy="63" rx="3" ry="4"/>
+        <ellipse class="pupil" id="pupilR" cx="72" cy="63" rx="3" ry="4"/>
+    </svg>
+    <script>
+        // Water wave animation
+
+        
+        function animateWaves() {
+            const t = Date.now() / 900;
+            const wave1 = document.getElementById('wave1');
+            const wave2 = document.getElementById('wave2');
+            let d1 = "M0,900";
+            let d2 = "M0,950";
+            for(let x=0; x<=1920; x+=20){
+                d1 += ` Q${x+10},${900+Math.sin((x/200)+t)*30} ${x+20},900`;
+                d2 += ` Q${x+10},${950+Math.cos((x/180)-t/2)*20} ${x+20},950`;
+            }
+            d1 += " V1080 H0 Z";
+            d2 += " V1080 H0 Z";
+            wave1.setAttribute('d', d1);
+            wave2.setAttribute('d', d2);
+            requestAnimationFrame(animateWaves);
+        }
+        animateWaves();
+
+        // Creature movement and animation
+        const creature = document.querySelector('.creature');
+        const pupilL = document.getElementById('pupilL');
+        const pupilR = document.getElementById('pupilR');
+        const tentacles = [
+            document.getElementById('t1'),
+            document.getElementById('t2'),
+            document.getElementById('t3'),
+            document.getElementById('t4')
+        ];
+
+        document.addEventListener('mousemove', (e) => {
+            // Move creature to mouse
+            const x = e.clientX;
+            const y = e.clientY;
+            creature.style.left = x + 'px';
+            creature.style.top = y + 'px';
+
+            // Animate pupils to follow mouse
+            const rect = creature.getBoundingClientRect();
+            const cxL = 48, cyL = 63, cxR = 72, cyR = 63;
+            const centerX = rect.left + 60, centerY = rect.top + 60;
+            const dx = x - centerX, dy = y - centerY;
+            const angle = Math.atan2(dy, dx);
+            const dist = Math.min(5, Math.hypot(dx, dy) / 30);
+
+            pupilL.setAttribute('cx', cxL + Math.cos(angle) * dist);
+            pupilL.setAttribute('cy', cyL + Math.sin(angle) * dist);
+            pupilR.setAttribute('cx', cxR + Math.cos(angle) * dist);
+            pupilR.setAttribute('cy', cyR + Math.sin(angle) * dist);
+
+            // Animate tentacles
+            tentacles.forEach((tentacle, i) => {
+                const sway = Math.sin(Date.now()/400 + i) * 10 + (dx/50) * (i%2===0?1:-1);
+                let d;
+                if(i === 0) d = `M60,95 Q60,110 ${40+sway},110`;
+                if(i === 1) d = `M60,95 Q60,110 ${80+sway},110`;
+                if(i === 2) d = `M60,95 Q50,115 ${30+sway},100`;
+                if(i === 3) d = `M60,95 Q70,115 ${90+sway},100`;
+                tentacle.setAttribute('d', d);
+            });
+        });
+
+        // Colorful hover effect
+        creature.addEventListener('mouseenter', () => {
+            creature.style.filter = 'hue-rotate(90deg) brightness(1.2)';
+            tentacles.forEach(t => t.style.stroke = 'url(#tentacleGradient)');
+        });
+        creature.addEventListener('mouseleave', () => {
+            creature.style.filter = '';
+            tentacles.forEach(t => t.style.stroke = 'url(#tentacleGradient)');
+        });
+    </script>
+</body>
+</html>
