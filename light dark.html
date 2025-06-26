@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Light/Dark Mode Toggle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --transition: 0.5s cubic-bezier(.4,0,.2,1);
+            --sun-color: #FFD93B;
+            --sky-light: #87CEEB;
+            --sky-dark: #1a2233;
+            --moon-color: #fffbe7;
+            --star-color: #fff;
+            --text-light: #222;
+            --text-dark: #f5f5f5;
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--sky-light);
+            color: var(--text-light);
+            font-family: 'Segoe UI', sans-serif;
+            transition: background var(--transition), color var(--transition);
+        }
+        .container {
+            text-align: center;
+            padding: 2rem 3rem;
+            border-radius: 2rem;
+            background: rgba(255,255,255,0.7);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+            transition: background var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .toggle-btn {
+            background: none;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            margin-bottom: 2rem;
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            transition: box-shadow var(--transition);
+        }
+        .sun, .moon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: opacity var(--transition);
+        }
+        .sun {
+            width: 40px;
+            height: 40px;
+            background: var(--sun-color);
+            border-radius: 50%;
+            box-shadow: 0 0 30px 10px #ffe06688;
+            z-index: 2;
+        }
+        .sun-rays {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+            pointer-events: none;
+        }
+        .sun-rays span {
+            position: absolute;
+            width: 6px;
+            height: 18px;
+            background: var(--sun-color);
+            border-radius: 3px;
+            left: 50%;
+            top: 0;
+            transform-origin: 50% 30px;
+            opacity: 0.7;
+        }
+        .sun-rays span:nth-child(1) { transform: rotate(0deg) translateY(-8px);}
+        .sun-rays span:nth-child(2) { transform: rotate(45deg) translateY(-8px);}
+        .sun-rays span:nth-child(3) { transform: rotate(90deg) translateY(-8px);}
+        .sun-rays span:nth-child(4) { transform: rotate(135deg) translateY(-8px);}
+        .sun-rays span:nth-child(5) { transform: rotate(180deg) translateY(-8px);}
+        .sun-rays span:nth-child(6) { transform: rotate(225deg) translateY(-8px);}
+        .sun-rays span:nth-child(7) { transform: rotate(270deg) translateY(-8px);}
+        .sun-rays span:nth-child(8) { transform: rotate(315deg) translateY(-8px);}
+        .moon {
+            width: 36px;
+            height: 36px;
+            background: var(--moon-color);
+            border-radius: 50%;
+            box-shadow: -10px 0 0 0 #e0e0e0;
+            opacity: 0;
+            z-index: 2;
+        }
+        .stars {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity var(--transition);
+        }
+        .star {
+            position: absolute;
+            background: var(--star-color);
+            border-radius: 50%;
+            opacity: 0.8;
+        }
+        .star1 { width: 3px; height: 3px; left: 10px; top: 12px;}
+        .star2 { width: 2px; height: 2px; left: 40px; top: 8px;}
+        .star3 { width: 2.5px; height: 2.5px; left: 25px; top: 45px;}
+        .star4 { width: 1.5px; height: 1.5px; left: 50px; top: 30px;}
+        .star5 { width: 2px; height: 2px; left: 18px; top: 30px;}
+        .star6 { width: 1.5px; height: 1.5px; left: 35px; top: 20px;}
+        .star7 { width: 2px; height: 2px; left: 48px; top: 50px;}
+        .star8 { width: 1.5px; height: 1.5px; left: 8px; top: 40px;}
+        .title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+            transition: color var(--transition);
+        }
+        .desc {
+            font-size: 1.1rem;
+            color: #444;
+            transition: color var(--transition);
+        }
+        body.dark {
+            background: var(--sky-dark);
+            color: var(--text-dark);
+        }
+        body.dark .container {
+            background: rgba(30,34,51,0.85);
+        }
+        body.dark .title,
+        body.dark .desc {
+            color: var(--text-dark);
+        }
+        body.dark .sun,
+        body.dark .sun-rays {
+            opacity: 0;
+        }
+        body.dark .moon,
+        body.dark .stars {
+            opacity: 1;
+        }
+        .toggle-btn:focus {
+            box-shadow: 0 0 0 3px #ffd93b55;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="toggle-btn" id="toggleMode" aria-label="Toggle light/dark mode">
+            <span class="sun"></span>
+            <span class="sun-rays">
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+            </span>
+            <span class="moon"></span>
+            <span class="stars">
+                <span class="star star1"></span>
+                <span class="star star2"></span>
+                <span class="star star3"></span>
+                <span class="star star4"></span>
+                <span class="star star5"></span>
+                <span class="star star6"></span>
+                <span class="star star7"></span>
+                <span class="star star8"></span>
+            </span>
+        </button>
+        <div class="title" id="modeTitle">Light Mode</div>
+        <div class="desc" id="modeDesc">Enjoy the bright sun and blue sky!</div>
+    </div>
+    <script>
+        const toggleBtn = document.getElementById('toggleMode');
+        const body = document.body;
+        const modeTitle = document.getElementById('modeTitle');
+        const modeDesc = document.getElementById('modeDesc');
+
+        function setMode(dark) {
+            if (dark) {
+                body.classList.add('dark');
+                modeTitle.textContent = "Dark Mode";
+                modeDesc.textContent = "Relax under the stars and moon!";
+            } else {
+                body.classList.remove('dark');
+                modeTitle.textContent = "Light Mode";
+                modeDesc.textContent = "Enjoy the bright sun and blue sky!";
+            }
+        }
+
+        // Toggle mode on button click
+        toggleBtn.addEventListener('click', () => {
+            setMode(!body.classList.contains('dark'));
+        });
+
+        // Optional: Set mode based on system preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            setMode(true);
+        }
+    </script>
+</body>
+</html>
